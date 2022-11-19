@@ -35,7 +35,7 @@ const Section3Right = tw.div`flex flex-col items-start align-top w-1/2`
 const ButtonContainer = tw.div`flex flex-row justify-center items-center`
 const Button = tw.a`flex flex-col items-center justify-center px-8 py-3 mb-5 font-bold rounded bg-punchyBlue text-gray-100 hocus:bg-lightBlue focus:text-gray-200 transition duration-300 hover:cursor-pointer`
 
-function Home({ provider, setSigner }) {
+function Home({ provider, setSigner, setAccount }) {
     const navigate = useNavigate()
     const login = () => {
         provider
@@ -43,6 +43,7 @@ function Home({ provider, setSigner }) {
             .then((accounts) => {
                 const addr = accounts[0]
                 const signer = provider.getSigner(addr)
+                setAccount(addr)
                 setSigner(signer)
 
                 navigate("account")

@@ -17,10 +17,13 @@ function App() {
     })
 
     const [signer, setSigner] = useState(undefined)
+    const [account, setAccount] = useState(null)
     const provider = magic.rpcProvider && new ethers.providers.Web3Provider(magic.rpcProvider)
     const isSignedIn = signer != undefined
 
-    const homeElement = <HomePage setSigner={setSigner} provider={provider} />
+    const homeElement = (
+        <HomePage setSigner={setSigner} setAccount={setAccount} provider={provider} />
+    )
     return (
         <CookiesProvider>
             <ThirdwebSDKProvider
@@ -37,7 +40,7 @@ function App() {
                                     path="/account"
                                     element={
                                         isSignedIn ? (
-                                            <AccountPage setSigner={setSigner} />
+                                            <AccountPage setSigner={setSigner} account={account} />
                                         ) : (
                                             homeElement
                                         )

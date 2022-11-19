@@ -13,19 +13,11 @@ import Content from "../components/accountPageComp/accountHero.js"
 const Container = tw.div`mx-10 my-10 h-screen`
 const LogoComponent = tw.img`w-1/6`
 
-function Account({ setSigner }) {
+function Account({ setSigner, account }) {
     const [cookies, setCookie] = useCookies(["currentSite", "latestMessage"])
-    const [initialized, setInitialized] = useState(false)
-    const [account, setAccount] = useState(null)
     const dispatch = useNotification()
 
     const sdk = useSDK()
-    const hasValidSigner = sdk.getSigner() !== undefined
-
-    if (hasValidSigner) {
-        console.log("was here")
-        sdk.wallet.getAddress().then((addr) => setAccount(addr))
-    }
 
     const disconnect = async () => {
         await magic.connect.disconnect().catch((e) => console.log(e))
@@ -57,11 +49,6 @@ function Account({ setSigner }) {
         setCookie("latestMessage", "undefined")
     }, [latestMessage])
 
-    useEffect(() => {
-        console.log(account)
-        if (account !== null) setInitialized(true)
-    }, [account])
-
     return (
         //Always here
         <Container>
@@ -69,7 +56,7 @@ function Account({ setSigner }) {
                 <LogoComponent src={logo} alt="aspan logo" />
             </a>
             <br></br>
-            {initialized && <Content account={account} />}
+            <Content account={account} />
         </Container>
     )
 }
