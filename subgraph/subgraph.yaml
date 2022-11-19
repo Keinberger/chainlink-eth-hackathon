@@ -1,0 +1,27 @@
+specVersion: 0.0.4
+schema:
+    file: ./schema.graphql
+dataSources:
+    - kind: ethereum
+      name: Vault
+      network: matic
+      source:
+          address: "0xC64B2157B0165b8f85e40D08D5Aa4e852B445527"
+          abi: Vault
+          startBlock: 35784193
+      mapping:
+          kind: ethereum/events
+          apiVersion: 0.0.6
+          language: wasm/assemblyscript
+          entities:
+              - AspanTransaction
+              - Position
+          abis:
+              - name: Vault
+                file: ./abis/Vault.json
+          eventHandlers:
+              - event: Deposit(address,uint256,uint256)
+                handler: handleDeposit
+              - event: Withdraw(address,uint256,uint256)
+                handler: handleWithdrawal
+          file: ./src/vault.ts

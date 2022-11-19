@@ -1,0 +1,24 @@
+enum AspanTransactionType {
+    Deposit
+    Withdrawal
+}
+
+type AspanTransaction @entity {
+    id: ID!
+    type: AspanTransactionType!
+    userAddress: Bytes!
+    usdcChange: BigInt!
+    tokensChange: BigInt!
+    timestamp: BigInt!
+    position: Position!
+}
+
+type Position @entity {
+    id: Bytes! #ID
+    userAddress: Bytes!
+    usdcProvided: BigInt!
+    usdcWithdrawn: BigInt!
+    aspanBalance: BigInt!
+    active: Boolean!
+    history: [AspanTransaction!]! @derivedFrom(field: "position")
+}
