@@ -67,8 +67,8 @@ contract Vault is IVault {
             [aaveATokenDaiAddress, aaveATokenUsdcAddress, aaveATokenUsdtAddress]
         );
         IERC20(usdcTokenAddress).transferFrom(msg.sender, address(this), _amount); //if the checks pass, transfer proceeds
-        fillQuote(_amount / 3, IERC20(usdcTokenAddress), usdtTokenAddress, dc2dtSwapCallData);
-        fillQuote(_amount / 3, IERC20(usdcTokenAddress), daiTokenAddress, dc2daiSwapCallData);
+        fillQuote(_amount / 3, IERC20(usdcTokenAddress), polygonProxyAddr, dc2dtSwapCallData);
+        fillQuote(_amount / 3, IERC20(usdcTokenAddress), polygonProxyAddr, dc2daiSwapCallData);
 
         supplyToAave(((_amount / 3) * 995) / 1000, usdcTokenAddress);
         supplyToAave(((_amount / 3) * 995) / 1000, usdtTokenAddress);
@@ -98,8 +98,8 @@ contract Vault is IVault {
         withdrawFromAave(usdcValue / 3, usdcTokenAddress);
         withdrawFromAave(usdcValue / 3, daiTokenAddress);
 
-        fillQuote(usdcValue / 3, IERC20(usdtTokenAddress), usdcTokenAddress, dt2dcSwapCallData);
-        fillQuote(usdcValue / 3, IERC20(daiTokenAddress), usdcTokenAddress, dai2dcSwapCallData);
+        fillQuote(usdcValue / 3, IERC20(usdtTokenAddress), polygonProxyAddr, dt2dcSwapCallData);
+        fillQuote(usdcValue / 3, IERC20(daiTokenAddress), polygonProxyAddr, dai2dcSwapCallData);
 
         IERC20(usdcTokenAddress).transfer(msg.sender, (usdcValue * 995) / 1000); //taking a 0.5% cut also avoiding slippage
         emit Withdraw(msg.sender, aspanTokenAmount, usdcValue);

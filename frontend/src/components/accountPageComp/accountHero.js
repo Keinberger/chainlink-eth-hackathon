@@ -51,8 +51,8 @@ function AccountHero({ account }) {
 
     let formattedBalance, ROI_IN_USD
     if (!graphData || graphData.positions.length == 0) {
-        formattedBalance = ethers.utils.parseEther("0")
-        ROI_IN_USD = ethers.utils.parseEther("0")
+        formattedBalance = ethers.utils.parseEther("0").toString()
+        ROI_IN_USD = ethers.utils.parseEther("0").toString()
     }
 
     const aspanTransactionsData = position && position.history
@@ -65,12 +65,15 @@ function AccountHero({ account }) {
 
     const balance =
         position && ethers.BigNumber.from(position.aspanBalance).mul(aspanTokenPrice).div(ONE_ETH)
-    formattedBalance = balance && trimNumber(ethers.utils.formatEther(balance), 3)
 
-    ROI_IN_USD =
-        providedMinWithdrawn &&
-        balance &&
-        trimNumber(ethers.utils.formatEther(String(balance.toString() - providedMinWithdrawn)), 3)
+    if (balance) (formattedBalance = ethers.utils.formatEther(balance)), 3
+
+    if (providedMinWithdrawn && balance)
+        ROI_IN_USD = ethers.utils.formatEther(
+            String(
+                balance.toString() - ethers.utils.parseUnits(providedMinWithdrawn, 12).toString()
+            )
+        )
 
     return (
         <Content>
@@ -92,8 +95,10 @@ function AccountHero({ account }) {
                 </ChartPortion>
 
                 <HistoryPortion>
-                    <SavingsTitle>History</SavingsTitle>
-                    {aspanTransactionsData && (
+                    <SavingsTitle>
+                        {aspanTransactionsData ? "History" : "No Deposits yet"}
+                    </SavingsTitle>
+                    {aspanTransactionsData && aspanTransactionsData.length > 0 && (
                         <History aspanTransactionsData={aspanTransactionsData} />
                     )}
                 </HistoryPortion>

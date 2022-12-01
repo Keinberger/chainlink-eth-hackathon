@@ -30,7 +30,7 @@ contract PriceOracle is IPriceOracle, Ownable {
 
     function _toWei(uint256 number, uint256 decimals) internal pure returns (uint256) {
         uint256 power = 18 - decimals;
-        return number * (10**power);
+        return number * (10 ** power);
     }
 
     function _usdToUSDC(uint256 value) internal view returns (uint256) {
@@ -38,11 +38,10 @@ contract PriceOracle is IPriceOracle, Ownable {
             getPriceFromAggregator(s_USDAggregatorAddresses[s_USDCaddress]));
     }
 
-    function _getUnderlyingBalanceOf(address owner, address aTokenAddress)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getUnderlyingBalanceOf(
+        address owner,
+        address aTokenAddress
+    ) internal view returns (uint256) {
         IERC20 underlyingToken = IERC20(_getUnderlyingAddressOf(aTokenAddress));
         return underlyingToken.balanceOf(owner);
     }
@@ -63,18 +62,17 @@ contract PriceOracle is IPriceOracle, Ownable {
         s_USDCaddress = usdcAddress;
     }
 
-    function setAggregatorAddress(address erc20Address, address aggregatorAddress)
-        public
-        onlyOwner
-    {
+    function setAggregatorAddress(
+        address erc20Address,
+        address aggregatorAddress
+    ) public onlyOwner {
         s_USDAggregatorAddresses[erc20Address] = aggregatorAddress;
     }
 
-    function getUSDValueOf(address valueHolder, address[3] calldata aTokenAddresses)
-        public
-        view
-        returns (uint256 usdValue)
-    {
+    function getUSDValueOf(
+        address valueHolder,
+        address[3] calldata aTokenAddresses
+    ) public view returns (uint256 usdValue) {
         for (uint256 i = 0; i < aTokenAddresses.length; i++) {
             address aTokenAddress = aTokenAddresses[i];
             IdERC20 aToken = IdERC20(aTokenAddress);
@@ -93,9 +91,11 @@ contract PriceOracle is IPriceOracle, Ownable {
         address tokenAddress,
         address[3] calldata aTokenAddresses
     ) external view override returns (uint256) {
-        return
-            (getUSDValueOf(vaultAddress, aTokenAddresses) * DIVISION_GUARD) /
-            IERC20(tokenAddress).totalSupply();
+        uint256 aspanSupply = IERC20(tokenAddress).totalSupply();
+        uint256 vaultValue = getUSDValueOf(vaultAddress, aTokenAddresses);
+        if (aspanSupply == 0 || vaultValue == 0) return 1e18;
+
+        return (vaultValue * DIVISION_GUARD) / aspanSupply;
     }
 
     function getUSDCPriceOf(
@@ -103,8 +103,10 @@ contract PriceOracle is IPriceOracle, Ownable {
         address tokenAddress,
         address[3] calldata aTokenAddresses
     ) external view override returns (uint256) {
-        return
-            ((_usdToUSDC(getUSDValueOf(vaultAddress, aTokenAddresses))) * DIVISION_GUARD) /
-            IERC20(tokenAddress).totalSupply();
+        uint256 aspanSupply = IERC20(tokenAddress).totalSupply();
+        uint256 vaultValue = getUSDValueOf(vaultAddress, aTokenAddresses);
+        if (aspanSupply == 0 || vaultValue == 0) return 1e18;
+
+        return (_usdToUSDC(vaultValue) * DIVISION_GUARD) / aspanSupply;
     }
 }
